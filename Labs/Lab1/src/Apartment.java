@@ -7,12 +7,7 @@ public class Apartment {
     private double lifetime;
 
     public Apartment() {
-        no = 0;
-        square = 0;
-        floor = 0;
-        roomNumber = 0;
         buildingType = "";
-        lifetime = 0;
     }
 
     public Apartment(int no, double square, int floor, int roomNumber, String buildingType, double lifetime) {
@@ -74,6 +69,6 @@ public class Apartment {
 
     @Override
     public String toString() {
-        return String.format("Apartment: no %d, square %f, floor %d, number of rooms %d, building type %s, lifetime %f", no, square, floor, roomNumber, buildingType, lifetime);
+        return String.format("| %4d | %8.2f | %5d | %12d | %20s | %8.2f", no, square, floor, roomNumber, buildingType, lifetime);
     }
 }

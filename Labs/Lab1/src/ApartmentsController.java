@@ -1,109 +1,127 @@
-import java.util.InputMismatchException;
 import java.util.Scanner;
 
 public class ApartmentsController {
-    private IApartmentsModel model;
-    private IApartmentView view;
-    private Scanner scanner;
+    private final int DIVISION_LINE_LEN = 10;
+    private ApartmentsModel model;
+    private ApartmentsView view;
+    private InputReader inputReader;
 
     public ApartmentsController() {
-        model = new ApartmentsModel();
-        view = new ApartmentsView();
-        scanner = new Scanner(System.in);
+        model = new ApartmentsRamModel();
+        view = new ApartmentsConsoleView();
+        inputReader = new InputConsoleReader();
     }
 
     public void run() {
         taskMenu();
     }
 
+    private void printTaskMenu() {
+        view.drawDivisionLine(DIVISION_LINE_LEN);
+        view.showMessage("1 - fill test data");
+        view.showMessage("2 - show all apartments");
+        view.showMessage("3 - number of rooms");
+        view.showMessage("4 - more than square and higher than floor");
+        view.showMessage("5 - exit");
+    }
+
     private void taskMenu() {
-        boolean inMenu = true;
         int choice = -1;
+        boolean inMenu = true;
 
         while (inMenu) {
-            view.showMessage("----------");
-            view.showMessage("1 - show all apartments");
-            view.showMessage("2 - number of rooms");
-            view.showMessage("3 - more than square and higher than floor");
-            view.showMessage("4 - exit");
+            printTaskMenu();
 
             try {
-                choice = Integer.parseInt(scanner.nextLine());
-            } catch (NumberFormatException ex) {
-                choice = -1;
+                choice = inputReader.getInt();
+            } catch (NumberFormatException e) {
+                view.showErrorMessage("Wrong input");
+                continue;
             }
 
             switch (choice) {
                 case 1:
-                    showAllApartments();
+                    fillTestData();
+                    view.showMessage("Filled");
                     break;
                 case 2:
-                    task1();
+                    showAllApartments();
                     break;
                 case 3:
-                    task2();
+                    task1();
                     break;
                 case 4:
+                    task2();
+                    break;
+                case 5:
                     inMenu = false;
                     break;
                 default:
-                    view.showErrorMessage("Wrong input");
+                    view.showErrorMessage("Wrong number");
                     break;
             }
         }
     }
 
-    private void showAllApartments() {
-        view.showMessage("----------");
+    private void showOrEmpty(Apartment[] apartments) {
+        if (apartments.length > 0)
+            view.showApartments(apartments);
+        else {
+            view.showEmpty();
+        }
+    }
 
+    private void showAllApartments() {
+        view.drawDivisionLine(DIVISION_LINE_LEN);
         Apartment[] result = model.getApartments();
-        view.showApartments(result);
+        showOrEmpty(result);
     }
 
     private void task1() {
-        boolean inMenu = true;
         int roomNumber = 0;
+        boolean inLoop = true;
 
-        while (inMenu) {
-            view.showMessage("----------");
+        while (inLoop) {
+            view.drawDivisionLine(DIVISION_LINE_LEN);
             view.showMessage("Number of rooms: ");
+
             try {
-                roomNumber = Integer.parseInt(scanner.nextLine());
-                inMenu = false;
-            } catch (NumberFormatException ex) {
+                roomNumber = inputReader.getInt();
+                inLoop = false;
+            } catch (NumberFormatException e) {
                 view.showErrorMessage("Wrong input");
                 continue;
             }
         }
 
         Apartment[] result = model.getApartments(roomNumber);
-        view.showApartments(result);
+        showOrEmpty(result);
     }
 
     private void task2() {
-        boolean inMenu = true;
+        boolean inLoop = true;
         int moreThanSquare = 0;
         int higherThanFloor = 0;
 
-        while (inMenu) {
-            view.showMessage("----------");
+        while (inLoop) {
+            view.drawDivisionLine(DIVISION_LINE_LEN);
             view.showMessage("More than square: ");
             try {
-                moreThanSquare = Integer.parseInt(scanner.nextLine());
-                inMenu = false;
+                moreThanSquare = inputReader.getInt();
+                inLoop = false;
             } catch (NumberFormatException ex) {
                 view.showErrorMessage("Wrong input");
                 continue;
             }
         }
 
-        inMenu = true;
-        while (inMenu) {
-            view.showMessage("----------");
+        inLoop = true;
+        while (inLoop) {
+            view.drawDivisionLine(DIVISION_LINE_LEN);
             view.showMessage("Higher than floor: ");
             try {
-                higherThanFloor = Integer.parseInt(scanner.nextLine());
-                inMenu = false;
+                higherThanFloor = inputReader.getInt();
+                inLoop = false;
             } catch (NumberFormatException ex) {
                 view.showErrorMessage("Wrong input");
                 continue;
@@ -111,11 +129,10 @@ public class ApartmentsController {
         }
 
         Apartment[] result = model.getApartments(moreThanSquare, higherThanFloor);
-        view.showApartments(result);
+        showOrEmpty(result);
     }
 
     public void fillTestData() {
-        model.recreateAppartments(10);
         model.addApartment(new Apartment(1, 30, 1, 2, "Mid-rise", 3));
         model.addApartment(new Apartment(2, 35, 1, 2, "Mid-rise", 4));
         model.addApartment(new Apartment(3, 45, 2, 3, "Mid-rise", 3));
@@ -130,5 +147,10 @@ public class ApartmentsController {
 
     private void addApartment(Apartment apartment) {
         model.addApartment(apartment);
+    }
+
+    @Deprecated
+    public void egg() {
+        //test features
     }
 }
